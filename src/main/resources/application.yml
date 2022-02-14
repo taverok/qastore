@@ -1,0 +1,56 @@
+server:
+  port: 10001
+spring:
+  profiles:
+    active: local
+  application:
+    name: qa-store
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL:jdbc:postgresql://home.taverok.com:35432/qa-store?schema=public}
+    username: ${DB_USER:qastore}
+    password: ${DB_PASS}
+  security:
+    registrationSecret: LrvbQzT5p2Wc65
+    jwt:
+      secret: ky6sKeNsnWR5Wx
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    hibernate:
+      ddl-auto: update
+logging:
+  file:
+    path: /tmp/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+---
+spring:
+  config:
+    activate:
+      on-profile: integration
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update
