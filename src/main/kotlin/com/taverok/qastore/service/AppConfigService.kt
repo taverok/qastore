@@ -2,7 +2,6 @@ package com.taverok.qastore.service
 
 import com.taverok.qastore.exception.NotFoundException
 import com.taverok.qastore.repository.AppConfigRepository
-import mu.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 

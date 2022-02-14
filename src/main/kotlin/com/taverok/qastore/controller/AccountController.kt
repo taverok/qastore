@@ -4,13 +4,16 @@ import com.taverok.qastore.dto.JsonMessage
 import com.taverok.qastore.dto.request.AccountCreateRequest
 import com.taverok.qastore.dto.response.AccountResponse
 import com.taverok.qastore.service.AccountService
+import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/accounts")
 class AccountController(
     private val accountService: AccountService
 ) {
@@ -19,6 +22,16 @@ class AccountController(
         @RequestBody request: AccountCreateRequest
     ): JsonMessage<AccountResponse> {
         val account = accountService.create(request)
+        val response = accountService.getAccountResponse(account)
+
+        return JsonMessage.of(response)
+    }
+
+    @GetMapping
+    fun show(
+        @Parameter(hidden = true) principal: Principal
+    ): JsonMessage<AccountResponse> {
+        val account = accountService.findActiveByEmailOrTrow(principal.name)
         val response = accountService.getAccountResponse(account)
 
         return JsonMessage.of(response)
