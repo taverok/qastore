@@ -1,6 +1,7 @@
 package com.taverok.qastore.service
 
 import com.taverok.qastore.domain.Product
+import com.taverok.qastore.exception.NotFoundException
 import com.taverok.qastore.repository.ProductRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -13,6 +14,11 @@ class ProductService(
 
     fun getAllActive(): List<Product>{
         return products.filter { it.isActive }
+    }
+
+    fun getByIdOrThrow(productId: Long): Product{
+        return products.firstOrNull{it.id == productId}
+            ?: throw NotFoundException("product not found")
     }
 
     @Scheduled(fixedDelay = 60_000)
