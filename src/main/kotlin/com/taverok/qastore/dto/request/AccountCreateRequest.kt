@@ -1,5 +1,7 @@
-package com.taverok.sca.api.module.user.dto.request
+package com.taverok.qastore.dto.request
 
 data class AccountCreateRequest(
+    val username: String,
     val email: String,
+    val pass: String
 )

@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse
 
 
 @EnableWebSecurity
-class SecurityConfig(
+class SecurityRoutes(
     private val userDetailsService: UserDetailsService,
     private val jwtConfig: JwtConfig,
     private val encoder: BCryptPasswordEncoder
@@ -38,7 +38,8 @@ class SecurityConfig(
             .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
             .antMatchers(*swaggerPublicUrls).permitAll()
 
-            .antMatchers(HttpMethod.POST, ).permitAll()
+            .antMatchers(HttpMethod.PUT, "/auth").permitAll()
+            .antMatchers(HttpMethod.PUT, "/account").permitAll()
 
 //            // OTHER
             .anyRequest().authenticated()

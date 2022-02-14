@@ -1,4 +1,4 @@
-package com.taverok.sca.common
+package com.taverok.qastore.dto
 
 data class JsonMessage<T>(
     val content: T? = null,

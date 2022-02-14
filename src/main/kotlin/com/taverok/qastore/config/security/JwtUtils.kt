@@ -1,4 +1,4 @@
-package com.taverok.sca.api.config.security
+package com.taverok.qastore.config.security
 
 import io.jsonwebtoken.*
 import mu.KotlinLogging
@@ -8,7 +8,6 @@ import java.util.*
 
 
 const val bearerPrefix = "Bearer "
-const val emptyPass = "_"
 
 private val log = KotlinLogging.logger {}
 

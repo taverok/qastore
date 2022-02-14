@@ -1,4 +1,4 @@
-package team.dats.qiwiManager.config.security
+package com.taverok.qastore.config.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

@@ -1,3 +1,3 @@
-package com.taverok.sca.common.exception
+package com.taverok.qastore.exception
 
 class ClientSideException(message: String): RuntimeException(message)

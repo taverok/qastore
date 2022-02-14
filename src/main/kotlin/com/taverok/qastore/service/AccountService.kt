@@ -1,32 +1,47 @@
 package com.taverok.qastore.service
 
+import com.taverok.qastore.config.security.AccountCredentials
+import com.taverok.qastore.config.security.JwtConfig
+import com.taverok.qastore.config.security.newAuthToken
 import com.taverok.qastore.domain.Account
-import com.taverok.qastore.repository.UserRepository
+import com.taverok.qastore.domain.AccountRoles
+import com.taverok.qastore.dto.request.AccountCreateRequest
+import com.taverok.qastore.dto.response.AccountResponse
+import com.taverok.qastore.exception.ClientSideException
+import com.taverok.qastore.repository.AccountRepository
 import mu.KotlinLogging
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import javax.transaction.Transactional
 
 @Service
-class UserService(
+class AccountService(
     private val encoder: BCryptPasswordEncoder,
-    private val userRepository: UserRepository
+    private val jwtConfig: JwtConfig,
+    private val appConfigService: AppConfigService,
+    private val accountRepository: AccountRepository
 ) {
-    private val logger = KotlinLogging.logger {}
+    @Transactional
+    fun create(request: AccountCreateRequest): Account {
+        val email = request.email
+        val now = LocalDateTime.now()
+        val existingAccount = findByEmail(email)
 
-    private var cachedAccounts: List<Account> = emptyList()
+        if (existingAccount != null)
+            throw ClientSideException("account exists")
 
-//    fun create(request: UserCreateRequest) {
-//        val existingUser = findByUsername(request.username.trim())
-//        if (existingUser != null){
-//            reactivate(existingUser)
-//            return
-//        }
-//
-//        val user = User(username = request.username, pass = encoder.encode(request.pass))
-//        save(user)
-//    }
+        val account = Account(request.username, email).also {
+            it.pass = encoder.encode(request.pass)
+            it.bonuses = appConfigService.getDouble(NEW_USER_BONUSES_KEY)
+            it.createdAt = now
+        }
+
+        accountRepository.save(account)
+
+        return account
+    }
 
 //    fun changePassword(request: PasswordUpdateRequest){
 //        val user = findActiveByUsernameOrTrow(request.username)
@@ -37,39 +52,37 @@ class UserService(
 //        save(user)
 //    }
 
-    fun save(account: Account): Account {
-        val result = userRepository.save(account)
-        updateCache()
-
-        return result
+    fun findByEmail(email: String): Account? {
+        return accountRepository.findFirstByEmail(email)
     }
 
-    fun findByUsername(username: String): Account? {
-        return cachedAccounts.firstOrNull { it.username == username }
-    }
-
-    fun findActiveByUsernameOrTrow(username: String): Account {
-        val user = findByUsername(username)
+    fun findActiveByEmailOrTrow(email: String): Account {
+        val user = findByEmail(email)
 
         if (user?.isActive != true)
-            throw UsernameNotFoundException("user $username not found")
+            throw UsernameNotFoundException("user $email not found")
 
         return user
     }
 
-    fun findAllActive(): List<Account> {
-        return cachedAccounts.filter { it.isActive }
+
+    fun getAuthJwt(request: AccountCredentials): String {
+        val account = findActiveByEmailOrTrow(request.email)
+        val passMatches = encoder.matches(request.pass, account.pass)
+
+        if (!passMatches)
+            throw ClientSideException("wrong password")
+
+        return newAuthToken(jwtConfig.secret, request.email, listOf(AccountRoles.USER.name))
     }
 
-    fun findById(id: Long): Account {
-        return cachedAccounts.firstOrNull { it.id == id }
-            ?: throw UsernameNotFoundException("user $id not found")
-    }
-
-    @Scheduled(fixedDelay = 60_000)
-    fun updateCache() {
-        cachedAccounts = userRepository.findAll()
-
-        logger.info { "Users cache updated" }
+    fun getAccountResponse(account: Account): AccountResponse{
+        return AccountResponse(
+            email = account.email,
+            username = account.username,
+            bonuses = account.bonuses,
+            phone = account.phone,
+            createdAt = account.createdAt
+        )
     }
 }
