@@ -26,7 +26,7 @@ data class Order(
     var id: Long? = null
 
     var address: String = ""
-    var paymentStatus: PaymentStatus = PaymentStatus.PAYMENT_REQUIRED
+    var status: OrderStatus = OrderStatus.PAYMENT_REQUIRED
 
     var createdAt: LocalDateTime = LocalDateTime.MIN
 }

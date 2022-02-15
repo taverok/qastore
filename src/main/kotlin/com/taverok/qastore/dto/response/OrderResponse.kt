@@ -1,7 +1,7 @@
 package com.taverok.qastore.dto.response
 
 import com.taverok.qastore.domain.DeliveryType
-import com.taverok.qastore.domain.PaymentStatus
+import com.taverok.qastore.domain.OrderStatus
 import com.taverok.qastore.domain.PaymentType
 import java.time.LocalDateTime
 
@@ -16,6 +16,6 @@ data class OrderResponse(
 
     val paymentType: PaymentType,
     val deliveryType: DeliveryType,
-    val paymentStatus: PaymentStatus,
+    val status: OrderStatus,
     val createdAt: LocalDateTime
 )

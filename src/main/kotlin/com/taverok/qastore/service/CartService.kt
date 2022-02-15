@@ -71,4 +71,8 @@ class CartService(
         return currentBasket.firstOrNull { it.productId == productId }
     }
 
+    fun save(items: List<CartItem>) {
+        cartRepository.saveAll(items)
+    }
+
 }

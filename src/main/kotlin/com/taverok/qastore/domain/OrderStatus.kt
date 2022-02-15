@@ -1,6 +1,7 @@
 package com.taverok.qastore.domain
 
-enum class PaymentStatus {
+enum class OrderStatus {
     PAYMENT_REQUIRED,
+    DELIVERING,
     COMPLETED, CANCELED
 }
