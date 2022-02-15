@@ -4,12 +4,13 @@ import com.taverok.qastore.config.security.AccountCredentials
 import com.taverok.qastore.config.security.JwtConfig
 import com.taverok.qastore.config.security.newAuthToken
 import com.taverok.qastore.domain.Account
+import com.taverok.qastore.domain.AccountAddress
 import com.taverok.qastore.domain.AccountRoles
 import com.taverok.qastore.dto.request.AccountCreateRequest
+import com.taverok.qastore.dto.request.AccountUpdateRequest
 import com.taverok.qastore.dto.response.AccountResponse
 import com.taverok.qastore.exception.ClientSideException
 import com.taverok.qastore.repository.AccountRepository
-import mu.KotlinLogging
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -82,7 +83,27 @@ class AccountService(
             username = account.username,
             bonuses = account.bonuses,
             phone = account.phone,
-            createdAt = account.createdAt
+            createdAt = account.createdAt,
+            city = account.address?.city,
+            street = account.address?.street,
+            house = account.address?.house,
+            apartment = account.address?.apartment
         )
+    }
+
+    @Transactional
+    fun update(request: AccountUpdateRequest, account: Account) {
+        if (account.address == null){
+            account.address = AccountAddress().also { it.account = account }
+        }
+
+
+        val address = account.address!!
+        request.city?.let { address.city = it }
+        request.street?.let { address.street = it }
+        request.house?.let { address.house = it }
+        request.apartment?.let { address.apartment = it }
+
+        accountRepository.save(account)
     }
 }

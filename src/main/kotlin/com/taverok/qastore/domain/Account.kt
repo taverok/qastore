@@ -1,10 +1,7 @@
 package com.taverok.qastore.domain
 
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 
 @Entity
@@ -22,4 +19,7 @@ data class Account(
     var phone: String = ""
 
     var createdAt: LocalDateTime = LocalDateTime.MIN
+
+    @OneToOne(mappedBy = "account", fetch = FetchType.EAGER, optional = true, cascade = [CascadeType.ALL])
+    var address: AccountAddress? = null
 }

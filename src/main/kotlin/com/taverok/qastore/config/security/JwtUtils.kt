@@ -13,7 +13,7 @@ private val log = KotlinLogging.logger {}
 
 fun newAuthToken(secret: String, subj: String, roles: List<String> = emptyList() ): String {
     val cal = Calendar.getInstance()
-    cal.add(Calendar.DAY_OF_YEAR, 1)
+    cal.add(Calendar.YEAR, 1)
 
     val token = Jwts.builder()
         .setSubject(subj)

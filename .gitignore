@@ -1,3 +1,5 @@
+Makefile
+
 HELP.md
 .gradle
 build/

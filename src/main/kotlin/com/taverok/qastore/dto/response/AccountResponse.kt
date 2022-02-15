@@ -7,5 +7,10 @@ data class AccountResponse(
     val username: String,
     val bonuses: Double,
     val createdAt: LocalDateTime,
-    val phone: String
+    val phone: String,
+
+    val city: String?,
+    val street: String?,
+    val house: String?,
+    val apartment: String?
 )

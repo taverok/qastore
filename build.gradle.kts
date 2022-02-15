@@ -64,7 +64,7 @@ tasks.withType<Test> {
 }
 
 tasks.withType<BootJar> {
-	archiveFileName.set("qa-store.jar")
+	archiveFileName.set("qastore-api.jar")
 
 	launchScript()
 }
