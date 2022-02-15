@@ -6,6 +6,7 @@ import com.taverok.qastore.dto.response.OrderResponse
 import com.taverok.qastore.service.AccountService
 import com.taverok.qastore.service.OrderService
 import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -40,6 +41,17 @@ class OrderController(
         val account = accountService.findActiveByEmailOrTrow(principal.name)
         val order = orderService.newOrder(request, account)
         val response = orderService.toResponse(order)
+
+        return JsonMessage.of(response)
+    }
+
+    @GetMapping
+    fun list(
+        @Parameter(hidden = true) principal: Principal
+    ): JsonMessage<List<OrderResponse>> {
+        val account = accountService.findActiveByEmailOrTrow(principal.name)
+        val orders = orderService.getAll(account)
+        val response = orders.map { orderService.toResponse(it) }
 
         return JsonMessage.of(response)
     }

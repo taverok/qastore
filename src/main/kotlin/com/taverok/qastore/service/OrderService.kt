@@ -14,7 +14,6 @@ import javax.transaction.Transactional
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.round
 
 @Service
 class OrderService(
@@ -64,7 +63,9 @@ class OrderService(
         return order
     }
 
-
+    fun getAll(account: Account): List<Order> {
+        return orderRepository.findAllByAccountId(account.id!!)
+    }
 
     fun toResponse(o: Order): OrderResponse {
         return OrderResponse(
@@ -87,7 +88,7 @@ class OrderService(
 
     private fun validatePaymentType(total: Double, paymentType: PaymentType) {
         val min = conf.getDouble(MIN_POSTPAYMENT_AMOUNT)
-        if (paymentType != PaymentType.CARD_PREPAYMENT && total > min)
+        if (paymentType != CARD_PREPAYMENT && total > min)
             throw ClientSideException("must be prepaid, current total of $total is larger than $min")
     }
 
@@ -133,6 +134,7 @@ class OrderService(
             else -> conf.getDouble(DELIVERY_PRICE)
         }
     }
+
 
 }
 
