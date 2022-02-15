@@ -7,7 +7,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-data class BasketItem(
+data class CartItem(
     val accountId: Long = 0,
     val productId: Long = 0,
     var quantity: Long = 0

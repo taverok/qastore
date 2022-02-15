@@ -2,23 +2,23 @@ package com.taverok.qastore.controller
 
 import com.taverok.qastore.domain.Account
 import com.taverok.qastore.dto.JsonMessage
-import com.taverok.qastore.dto.response.BasketResponse
+import com.taverok.qastore.dto.response.CartResponse
 import com.taverok.qastore.service.AccountService
-import com.taverok.qastore.service.BasketService
+import com.taverok.qastore.service.CartService
 import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @RestController
-@RequestMapping("/basket")
-class BasketController(
+@RequestMapping("/cart")
+class CartController(
     private val accountService: AccountService,
-    private val basketService: BasketService
+    private val cartService: CartService
 ) {
     @GetMapping
     fun getCurrent(
         @Parameter(hidden = true) principal: Principal
-    ): JsonMessage<BasketResponse> {
+    ): JsonMessage<CartResponse> {
         val account = accountService.findActiveByEmailOrTrow(principal.name)
         return getResponse(account)
     }
@@ -27,9 +27,9 @@ class BasketController(
     fun addItem(
         @RequestParam productId: Long,
         @Parameter(hidden = true) principal: Principal
-    ): JsonMessage<BasketResponse> {
+    ): JsonMessage<CartResponse> {
         val account = accountService.findActiveByEmailOrTrow(principal.name)
-        basketService.add(productId, account)
+        cartService.add(productId, account)
 
         return getResponse(account)
     }
@@ -38,17 +38,17 @@ class BasketController(
     fun removeItem(
         @RequestParam productId: Long,
         @Parameter(hidden = true) principal: Principal
-    ): JsonMessage<BasketResponse> {
+    ): JsonMessage<CartResponse> {
         val account = accountService.findActiveByEmailOrTrow(principal.name)
-        basketService.remove(productId, account)
+        cartService.remove(productId, account)
 
         return getResponse(account)
     }
 
-    private fun getResponse(account: Account): JsonMessage<BasketResponse> {
-        val basketItems = basketService.getAll(account)
-        val response = BasketResponse(
-            items = basketItems.map { basketService.toResponse(it) }
+    private fun getResponse(account: Account): JsonMessage<CartResponse> {
+        val cartItems = cartService.getAll(account)
+        val response = CartResponse(
+            items = cartItems.map { cartService.toResponse(it) }
         )
 
         return JsonMessage.of(response)

@@ -1,23 +1,23 @@
 package com.taverok.qastore.service
 
 import com.taverok.qastore.domain.Account
-import com.taverok.qastore.domain.BasketItem
-import com.taverok.qastore.dto.response.BasketItemResponse
+import com.taverok.qastore.domain.CartItem
+import com.taverok.qastore.dto.response.CartItemResponse
 import com.taverok.qastore.dto.response.ProductResponse
-import com.taverok.qastore.repository.BasketRepository
+import com.taverok.qastore.repository.CartRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import javax.transaction.Transactional
 
 @Service
-class BasketService(
-    private val basketRepository: BasketRepository,
+class CartService(
+    private val cartRepository: CartRepository,
     private val productService: ProductService
 ) {
     @Transactional
     fun add(productId: Long, account: Account) {
         val item = getBasketItem(productId, account)
-            ?: BasketItem(
+            ?: CartItem(
                 accountId = account.id!!,
                 productId = productId,
                 quantity = 0,
@@ -27,7 +27,7 @@ class BasketService(
 
         item.quantity++
 
-        basketRepository.save(item)
+        cartRepository.save(item)
     }
 
     @Transactional
@@ -39,22 +39,22 @@ class BasketService(
                 return
             }
             item.quantity <= 1 -> {
-                basketRepository.delete(item)
+                cartRepository.delete(item)
             }
             else -> {
                 item.quantity--
-                basketRepository.save(item)
+                cartRepository.save(item)
             }
         }
     }
 
-    fun getAll(account: Account): List<BasketItem> {
-        return basketRepository.findAllByAccountIdAndOrderIdIsNull(account.id!!)
+    fun getAll(account: Account): List<CartItem> {
+        return cartRepository.findAllByAccountIdAndOrderIdIsNull(account.id!!)
     }
 
-    fun toResponse(item: BasketItem): BasketItemResponse {
+    fun toResponse(item: CartItem): CartItemResponse {
         val product = productService.getByIdOrThrow(item.productId)
-        return BasketItemResponse(
+        return CartItemResponse(
             product = ProductResponse.of(product),
             totalPrice = item.quantity * product.price,
             quantity = item.quantity
@@ -64,7 +64,7 @@ class BasketService(
     private fun getBasketItem(
         productId: Long,
         account: Account
-    ): BasketItem? {
+    ): CartItem? {
         productService.getByIdOrThrow(productId)
         val currentBasket = getAll(account)
 

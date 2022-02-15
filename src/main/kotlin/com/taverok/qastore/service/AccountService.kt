@@ -106,4 +106,11 @@ class AccountService(
 
         accountRepository.save(account)
     }
+
+    @Transactional
+    fun setBonuses(amount: Double, account: Account) {
+        account.bonuses = amount
+
+        accountRepository.save(account)
+    }
 }

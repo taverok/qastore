@@ -39,7 +39,7 @@ class SecurityRoutes(
             .antMatchers(*swaggerPublicUrls).permitAll()
 
             .antMatchers(HttpMethod.PUT, "/auth").permitAll()
-            .antMatchers(HttpMethod.PUT, "/account").permitAll()
+            .antMatchers(HttpMethod.PUT, "/accounts").permitAll()
 
 //            // OTHER
             .anyRequest().authenticated()
