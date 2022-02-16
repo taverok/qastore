@@ -3,17 +3,15 @@ package com.taverok.qastore.domain
 import com.taverok.qastore.domain.DeliveryType.PICKUP
 import com.taverok.qastore.domain.PaymentType.CARD_PREPAYMENT
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "orders")
 data class Order(
     val accountId: Long = 0,
+    @Enumerated(EnumType.STRING)
     var paymentType: PaymentType = CARD_PREPAYMENT,
+    @Enumerated(EnumType.STRING)
     val deliveryType: DeliveryType = PICKUP,
     val amount: Double =.0,
     val spentBonuses: Double = .0,
@@ -26,7 +24,9 @@ data class Order(
     var id: Long? = null
 
     var address: String = ""
+    @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.PAYMENT_REQUIRED
 
     var createdAt: LocalDateTime = LocalDateTime.MIN
+    var payedAt: LocalDateTime? = null
 }
