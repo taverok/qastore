@@ -6,9 +6,11 @@ import com.taverok.qastore.dto.response.CartResponse
 import com.taverok.qastore.service.AccountService
 import com.taverok.qastore.service.CartService
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/cart")
 class CartController(

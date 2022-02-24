@@ -4,10 +4,12 @@ import com.taverok.qastore.dto.JsonMessage
 import com.taverok.qastore.dto.response.ProductListResponse
 import com.taverok.qastore.dto.response.ProductResponse
 import com.taverok.qastore.service.ProductService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/products")
 class ProductController(
