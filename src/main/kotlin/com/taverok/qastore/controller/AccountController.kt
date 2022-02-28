@@ -23,7 +23,7 @@ class AccountController(
     @SecurityRequirement(name = "")
     @PutMapping
     fun create(
-        @RequestBody request: AccountCreateRequest
+        @Valid @RequestBody request: AccountCreateRequest
     ): JsonMessage<AccountResponse> {
         val account = accountService.create(request)
         val response = accountService.getAccountResponse(account)

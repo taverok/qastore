@@ -9,5 +9,7 @@ data class AccountUpdateRequest(
     val street: String?,
     @get:Pattern(regexp = "[0-9]*")
     val house: String?,
-    val apartment: String?
+    val apartment: String?,
+    @get:Pattern(regexp = "[0-9 +()-]*")
+    val phone: String?
 )

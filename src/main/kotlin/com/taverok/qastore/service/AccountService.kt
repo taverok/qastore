@@ -103,6 +103,7 @@ class AccountService(
         request.street?.let { address.street = it }
         request.house?.let { address.house = it }
         request.apartment?.let { address.apartment = it }
+        request.phone?.let { request.phone }
 
         accountRepository.save(account)
     }

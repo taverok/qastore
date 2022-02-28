@@ -119,7 +119,8 @@ class OrderService(
     }
 
     private fun newOrder(request: OrderCreateRequest, account: Account, items: List<CartItem>): Order {
-        validateCart(items)
+        if (items.isEmpty())
+            throw ClientSideException("empty cart")
 
         val orderAmount = items.sumOf { productService.getByIdOrThrow(it.productId).price * it.quantity }
         val deliveryPrice = calcDeliveryPrice(orderAmount)
@@ -187,11 +188,6 @@ class OrderService(
         val available = min(account.bonuses, requested)
 
         return min(available, orderAmount)
-    }
-
-    private fun validateCart(items: List<CartItem>) {
-        if (items.isEmpty())
-            throw ClientSideException("empty cart")
     }
 
     private fun validateDelivery(amount: Double, address: AccountAddress?, deliveryType: DeliveryType) {
