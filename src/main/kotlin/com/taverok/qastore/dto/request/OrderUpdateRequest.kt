@@ -6,5 +6,5 @@ import com.taverok.qastore.domain.PaymentType
 data class OrderUpdateRequest (
     var paymentType: PaymentType? = null,
     val deliveryType: DeliveryType? = null,
-    val bonuses: Double? = null
+    val useBonuses: Boolean? = null
 )

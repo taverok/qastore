@@ -19,7 +19,6 @@ import javax.transaction.Transactional
 import javax.transaction.Transactional.TxType.REQUIRES_NEW
 import kotlin.math.floor
 import kotlin.math.max
-import kotlin.math.min
 
 @Service
 class OrderService(
@@ -43,7 +42,7 @@ class OrderService(
 
         val items = cartRepository.findAllByOrderId(orderId)
         val createRequest = OrderCreateRequest(
-            bonuses = request.bonuses ?: order.spentBonuses,
+            useBonuses = request.useBonuses ?: (order.spentBonuses > 0) ,
             paymentType = request.paymentType ?: order.paymentType,
             deliveryType = request.deliveryType ?: order.deliveryType
         )
@@ -123,9 +122,10 @@ class OrderService(
             throw ClientSideException("empty cart")
 
         val orderAmount = items.sumOf { productService.getByIdOrThrow(it.productId).price * it.quantity }
+        val bonuses = if (request.useBonuses) max(.0, account.bonuses) else .0
         val deliveryPrice = calcDeliveryPrice(orderAmount)
-        val bonuses = calcSpendableBonuses(request, account, orderAmount)
         val total = orderAmount + deliveryPrice - bonuses
+
         val address = account.address
 
         validatePaymentType(total, request.paymentType)
@@ -177,17 +177,6 @@ class OrderService(
     private fun calcEarnedBonuses(total: Double): Double {
         val pct = conf.getDouble(BONUS_PCT)
         return floor(total * pct / 100)
-    }
-
-    private fun calcSpendableBonuses(
-        request: OrderCreateRequest,
-        account: Account,
-        orderAmount: Double
-    ): Double {
-        val requested = max(request.bonuses, .0)
-        val available = min(account.bonuses, requested)
-
-        return min(available, orderAmount)
     }
 
     private fun validateDelivery(amount: Double, address: AccountAddress?, deliveryType: DeliveryType) {
