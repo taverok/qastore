@@ -19,6 +19,7 @@ import javax.transaction.Transactional
 import javax.transaction.Transactional.TxType.REQUIRES_NEW
 import kotlin.math.floor
 import kotlin.math.max
+import kotlin.math.min
 
 @Service
 class OrderService(
@@ -121,10 +122,12 @@ class OrderService(
         if (items.isEmpty())
             throw ClientSideException("empty cart")
 
+        val availableBonuses = max(account.bonuses, .0)
         val orderAmount = items.sumOf { productService.getByIdOrThrow(it.productId).price * it.quantity }
-        val bonuses = if (request.useBonuses) max(.0, account.bonuses) else .0
-        val deliveryPrice = calcDeliveryPrice(orderAmount)
-        val total = orderAmount + deliveryPrice - bonuses
+        val bonuses = if (request.useBonuses) min(availableBonuses, orderAmount) else .0
+        var total = max(orderAmount - bonuses, .0)
+        val deliveryPrice = calcDeliveryPrice(total)
+        total += deliveryPrice
 
         val address = account.address
 
@@ -137,7 +140,7 @@ class OrderService(
             deliveryType = request.deliveryType,
             amount = orderAmount,
             spentBonuses = bonuses,
-            earnedBonuses = calcEarnedBonuses(total),
+            earnedBonuses = calcEarnedBonuses(orderAmount),
             deliveryPrice = deliveryPrice,
             total = total
         ).also {
